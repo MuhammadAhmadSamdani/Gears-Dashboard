@@ -1,9 +1,13 @@
 import { motion } from "framer-motion";
+import { useEffect, useRef } from "react";
 
 import "./OurGallery.css";
 
 import galleryImages from "./GalleryData";
 import timelineData from "./TimelineData";
+
+import { publicApi } from "../../services/api";
+import { useRemoteData } from "../../hooks/useRemoteData";
 
 
 // ===============================
@@ -108,6 +112,29 @@ const TimelineCard = ({ item, index }) => {
 // ===============================
 
 const OurGallery = () => {
+  const timelineRef = useRef(null);
+  const { data: images } = useRemoteData(
+    publicApi.gallery,
+    (response) => response?.images,
+    galleryImages
+  );
+
+  useEffect(() => {
+    const timeline = timelineRef.current;
+    const scrollTimeline = (event) => {
+      if (!event.cancelable || event.ctrlKey) return;
+
+      event.preventDefault();
+      const unit = [1, 16, timeline.clientWidth][event.deltaMode] ?? 1;
+      const { deltaX, deltaY } = event;
+      const delta = Math.abs(deltaX) > Math.abs(deltaY) ? deltaX : deltaY;
+      timeline.scrollBy({ left: delta * unit, behavior: "instant" });
+    };
+
+    timeline.addEventListener("wheel", scrollTimeline, { passive: false });
+    return () => timeline.removeEventListener("wheel", scrollTimeline);
+  }, []);
+
   return (
     <section className="our-gallery">
 
@@ -177,7 +204,7 @@ const OurGallery = () => {
 
         <div className="gallery-grid">
 
-          {galleryImages.map((item, index) => (
+          {images.map((item, index) => (
             <GalleryCard
               key={item.id}
               item={item}
@@ -220,7 +247,7 @@ const OurGallery = () => {
           </span>
 
 
-          <h2>
+          <h2 id="gallery-timeline-title">
             FROM <span>2016</span> TO TODAY
           </h2>
 
@@ -242,11 +269,17 @@ const OurGallery = () => {
 
           <div className="timeline-line" />
 
-          <div className="timeline-scroll">
+          <div
+            className="timeline-scroll"
+            ref={timelineRef}
+            role="region"
+            aria-labelledby="gallery-timeline-title"
+            tabIndex={0}
+          >
 
             {timelineData.map((item, index) => (
               <TimelineCard
-                key={item.year}
+                key={`${item.year}-${item.title}`}
                 item={item}
                 index={index}
               />

@@ -359,10 +359,7 @@ export const coreTeam = [
     name: "Daniyal",
     year: "ALUMNI OF THE YEAR",
     designation: "Outstanding contribution to GEARS",
-    image: getTeamImage(
-      "alumni",
-      "ahmad.jpg"
-    ),
+    image: null,
   },
 ];
 

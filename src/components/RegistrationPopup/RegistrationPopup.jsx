@@ -4,23 +4,18 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import "./RegistrationPopup.css";
 
+const POPUP_SEEN_KEY = "gears_registration_popup_seen";
+
 const RegistrationPopup = () => {
-  const [showPopup, setShowPopup] = useState(false);
+  const [showPopup, setShowPopup] = useState(
+    () => !localStorage.getItem(POPUP_SEEN_KEY)
+  );
 
   useEffect(() => {
-    const hasSeenPopup = localStorage.getItem(
-      "gears_registration_popup_seen"
-    );
-
-    if (!hasSeenPopup) {
-      setShowPopup(true);
-
-      localStorage.setItem(
-        "gears_registration_popup_seen",
-        "true"
-      );
+    if (showPopup) {
+      localStorage.setItem(POPUP_SEEN_KEY, "true");
     }
-  }, []);
+  }, [showPopup]);
 
   const closePopup = () => {
     setShowPopup(false);

@@ -278,8 +278,7 @@
    LEADERSHIP CARD
 ========================================================= */
 
-.leadership-member,
-.leadership-member-reverse {
+.leadership-member {
   position: relative;
 
   display: flex;
@@ -304,8 +303,7 @@
 }
 
 
-.leadership-member:hover,
-.leadership-member-reverse:hover {
+.leadership-member:hover {
   transform: translateY(-3px);
 
   border-color:
@@ -314,9 +312,7 @@
 
 
 .leadership-member::before,
-.leadership-member::after,
-.leadership-member-reverse::before,
-.leadership-member-reverse::after {
+.leadership-member::after {
   display: none !important;
 }
 
@@ -355,10 +351,7 @@
 }
 
 
-.leadership-member:hover
-.leadership-member-image img,
-.leadership-member-reverse:hover
-.leadership-member-image img {
+.leadership-member:hover .leadership-member-image img {
   transform: scale(1.025);
 }
 
@@ -484,6 +477,13 @@
   content: none !important;
 
   display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .leadership-member,
+  .leadership-member-image img {
+    transition: none;
+  }
 }
 
 
@@ -1378,8 +1378,7 @@
   }
 
 
-  .leadership-member,
-  .leadership-member-reverse {
+  .leadership-member {
     border-radius: 8px;
   }
 
@@ -1767,8 +1766,7 @@
 
 @media (hover: none) {
 
-  .leadership-member:hover,
-  .leadership-member-reverse:hover {
+  .leadership-member:hover {
     transform: none;
 
     border-color:
@@ -1776,10 +1774,7 @@
   }
 
 
-  .leadership-member:hover
-  .leadership-member-image img,
-  .leadership-member-reverse:hover
-  .leadership-member-image img {
+  .leadership-member:hover .leadership-member-image img {
     transform: none;
   }
 

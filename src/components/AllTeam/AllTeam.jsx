@@ -1,4 +1,6 @@
 import "./AllTeam.css";
+import LeadershipCards from "./LeadershipCards";
+import TeamImage from "./TeamImage";
 
 import {
   leadershipTeam,
@@ -7,38 +9,8 @@ import {
   allPresidents,
 } from "./AllTeamData";
 
-
-/* =========================================================
-   IMAGE FALLBACK
-========================================================= */
-
-const ImageBox = ({
-  image,
-  name,
-  className,
-}) => {
-  return (
-    <div className={className}>
-      {image ? (
-        <img
-          src={image}
-          alt={name}
-          loading="lazy"
-        />
-      ) : (
-        <div className="all-team-image-placeholder">
-          <span>
-            {name
-              ?.split(" ")
-              .map((word) => word[0])
-              .slice(0, 2)
-              .join("")}
-          </span>
-        </div>
-      )}
-    </div>
-  );
-};
+import { publicApi } from "../../services/api";
+import { useRemoteData } from "../../hooks/useRemoteData";
 
 
 /* =========================================================
@@ -81,6 +53,42 @@ const SectionHeading = ({
 ========================================================= */
 
 const AllTeam = () => {
+  /*
+    One request feeds all four sections. Each falls back to the
+    content that shipped with the site, so the page is never blank
+    and looks identical if the backend is unavailable.
+  */
+  const { data: team } = useRemoteData(
+    publicApi.team,
+    (response) =>
+      response?.leadership
+        ? {
+            leadership: response.leadership,
+            coreTeam: response.coreTeam,
+            alumni: response.alumni,
+            presidents: response.presidents,
+          }
+        : null,
+    {
+      leadership: leadershipTeam,
+      coreTeam,
+      alumni: alumniOfYear,
+      presidents: allPresidents,
+    }
+  );
+
+  const leadershipList = team.leadership?.length
+    ? team.leadership
+    : leadershipTeam;
+
+  const coreTeamList = team.coreTeam?.length ? team.coreTeam : coreTeam;
+
+  const alumniList = team.alumni?.length ? team.alumni : alumniOfYear;
+
+  const presidentList = team.presidents?.length
+    ? team.presidents
+    : allPresidents;
+
   return (
     <main className="all-team">
 
@@ -135,61 +143,7 @@ const AllTeam = () => {
           />
 
 
-          <div className="leadership-list">
-
-            {leadershipTeam.map(
-              (member, index) => (
-
-                <article
-                  className={`leadership-member ${
-                    index % 2 === 1
-                      ? "leadership-member-reverse"
-                      : ""
-                  }`}
-                  key={member.id}
-                >
-
-                  {/* IMAGE */}
-
-                  <ImageBox
-                    image={member.image}
-                    name={member.name}
-                    className="leadership-member-image"
-                  />
-
-
-                  {/* CONTENT */}
-
-                  <div className="leadership-member-content">
-
-                    <span className="team-designation">
-                      {member.designation}
-                    </span>
-
-                    <h3>
-                      {member.name}
-                    </h3>
-
-                    <div className="team-red-line" />
-
-                    <p className="leadership-member-message">
-                      “{member.message}”
-                    </p>
-
-                    {member.session && (
-                      <span className="team-session">
-                        {member.session}
-                      </span>
-                    )}
-
-                  </div>
-
-                </article>
-
-              )
-            )}
-
-          </div>
+          <LeadershipCards members={leadershipList} />
 
         </div>
 
@@ -214,7 +168,7 @@ const AllTeam = () => {
 
           <div className="core-team-grid">
 
-            {coreTeam.map(
+            {coreTeamList.map(
               (member, index) => (
 
                 <article
@@ -226,7 +180,7 @@ const AllTeam = () => {
 
                   <div className="core-team-image-wrapper">
 
-                    <ImageBox
+                    <TeamImage
                       image={member.image}
                       name={member.name}
                       className="core-team-image"
@@ -304,7 +258,7 @@ const AllTeam = () => {
 
           <div className="alumni-grid">
 
-            {alumniOfYear.map(
+            {alumniList.map(
               (alumni, index) => (
 
                 <article
@@ -382,7 +336,7 @@ const AllTeam = () => {
 
           <div className="presidents-grid">
 
-            {allPresidents.map(
+            {presidentList.map(
               (president) => (
 
                 <article
@@ -390,7 +344,7 @@ const AllTeam = () => {
                   key={president.id}
                 >
 
-                  <ImageBox
+                  <TeamImage
                     image={president.image}
                     name={president.name}
                     className="president-image"

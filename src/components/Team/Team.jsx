@@ -4,70 +4,36 @@ import teamImage2 from "../../assets/images/Sir-Umer.png";
 import teamImage3 from "../../assets/images/Sir-Umair.png";
 import teamImage4 from "../../assets/images/Sir-Suhaib.png";
 
-const members = [
-    {
-        id: 1,
-        name: "Hassan Sultan",
-        designation: "Founder & Ex Supervisor",
-        image: teamImage1,
-    },
-    {
-        id: 2,
-        name: "Umer Ahmad",
-        designation: "Supervisor",
-        image: teamImage2,
-    },
-    {
-        id: 3,
-        name: "Umair Bin Ahmad",
-        designation: "Supervisor",
-        image: teamImage3,
-    },
-    {
-        id: 4,
-        name: "Suhaib Ahmed",
-        designation: "Co Supervisor",
-        image: teamImage4,
-    },
-];
+import { leadershipTeam } from "../AllTeam/AllTeamData";
+import LeadershipCards from "../AllTeam/LeadershipCards";
+import { publicApi } from "../../services/api";
+import { useRemoteData } from "../../hooks/useRemoteData";
+
+const homeImages = [teamImage1, teamImage2, teamImage3, teamImage4];
+const fallbackMembers = homeImages.map((image, index) => ({
+    ...leadershipTeam[index],
+    image,
+}));
 
 const Team = () => {
+    const { data: members } = useRemoteData(
+        publicApi.home,
+        (response) => response?.supervisors,
+        fallbackMembers
+    );
+
     return (
         <section className="team" id="team">
+            <div className="all-team-container">
+                <div className="team-title">
+                    <h2>OUR TEAM</h2>
+                    <p>
+                        Meet the visionary leaders driving innovation and shaping the future of GEARS.
+                    </p>
+                </div>
 
-            <div className="team-title">
-                <h2>OUR TEAM</h2>
-
-                <p>
-                    Meet the visionary leaders driving innovation and shaping the future of GEARS.
-                </p>
+                <LeadershipCards members={members} />
             </div>
-
-            <div className="team-container">
-
-                {members.map((member) => (
-                    <div className="team-card" key={member.id}>
-
-                        <img
-                            src={member.image}
-                            alt={member.name}
-                        />
-
-                        <div className="team-overlay">
-
-                            <h3>{member.name}</h3>
-
-                            <p>{member.designation}</p>
-
-                            <div className="line"></div>
-
-                        </div>
-
-                    </div>
-                ))}
-
-            </div>
-
         </section>
     );
 };
